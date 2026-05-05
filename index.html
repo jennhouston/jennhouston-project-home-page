@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>2026 Project Tracker</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Project navigation">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">A</div>
+          <div>
+            <h1>Project Home Page</h1>
+            <p id="todayLabel"></p>
+          </div>
+        </div>
+
+        <button class="primary-action" id="newProjectButton" type="button">
+          <span aria-hidden="true">+</span>
+          New Project
+        </button>
+
+        <nav class="project-nav" id="projectNav" aria-label="Projects"></nav>
+
+        <div class="sidebar-tools">
+          <button class="ghost-button" id="importDocButton" type="button">Import Doc Text</button>
+          <button class="ghost-button" id="exportButton" type="button">Export JSON</button>
+          <button class="ghost-button danger" id="resetButton" type="button">Reset Doc Plan</button>
+        </div>
+      </aside>
+
+      <main class="workspace">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow" id="projectEyebrow">All work</p>
+            <h2 id="projectTitle">2026 Project Tracker</h2>
+          </div>
+
+          <div class="topbar-actions">
+            <label class="search-field">
+              <span aria-hidden="true">/</span>
+              <input id="searchInput" type="search" placeholder="Search tasks, owners, tags" />
+            </label>
+            <button class="ghost-button hidden" id="editProjectButton" type="button">Edit Project</button>
+            <button class="secondary-action" id="newTaskButton" type="button">
+              <span aria-hidden="true">+</span>
+              New Task
+            </button>
+          </div>
+        </header>
+
+        <section class="metrics" id="metrics" aria-label="Portfolio metrics"></section>
+
+        <section class="control-strip" aria-label="Task controls">
+          <div class="segmented-control" role="tablist" aria-label="View mode">
+            <button class="segment active" id="boardViewButton" type="button" role="tab" aria-selected="true">Board</button>
+            <button class="segment" id="listViewButton" type="button" role="tab" aria-selected="false">List</button>
+          </div>
+
+          <div class="filters">
+            <label>
+              Priority
+              <select id="priorityFilter">
+                <option value="all">All</option>
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+              </select>
+            </label>
+            <label>
+              Owner
+              <select id="ownerFilter">
+                <option value="all">All</option>
+              </select>
+            </label>
+          </div>
+        </section>
+
+        <section class="board-view" id="boardView" aria-label="Task board"></section>
+
+        <section class="list-view hidden" id="listView" aria-label="Task list">
+          <div class="table-shell">
+            <table>
+              <thead>
+                <tr>
+                  <th>Task</th>
+                  <th>Project</th>
+                  <th>Status</th>
+                  <th>Priority</th>
+                  <th>Owner</th>
+                  <th>Due</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="taskTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <dialog id="taskDialog">
+      <form method="dialog" id="taskForm" class="modal-form">
+        <div class="modal-header">
+          <div>
+            <p class="eyebrow">Task</p>
+            <h3 id="taskDialogTitle">New Task</h3>
+          </div>
+          <button class="icon-button" value="cancel" type="submit" formnovalidate aria-label="Close">x</button>
+        </div>
+
+        <input type="hidden" id="taskId" />
+        <div class="field-grid">
+          <label class="full-span">
+            Title
+            <input id="taskTitleInput" required maxlength="90" autocomplete="off" />
+          </label>
+
+          <label>
+            Project
+            <select id="taskProjectInput" required></select>
+          </label>
+
+          <label class="full-span hidden" id="taskNewProjectField">
+            New project name
+            <input id="taskNewProjectInput" maxlength="60" autocomplete="off" />
+          </label>
+
+          <label>
+            Status
+            <select id="taskStatusInput" required>
+              <option value="Planned">Planned</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Review">Review</option>
+              <option value="Done">Done</option>
+            </select>
+          </label>
+
+          <label>
+            Priority
+            <select id="taskPriorityInput" required>
+              <option value="High">High</option>
+              <option value="Medium">Medium</option>
+              <option value="Low">Low</option>
+            </select>
+          </label>
+
+          <label>
+            Owner
+            <input id="taskOwnerInput" maxlength="40" autocomplete="off" />
+          </label>
+
+          <label>
+            Due date
+            <input id="taskDueInput" type="date" />
+          </label>
+
+          <label class="full-span">
+            Tags
+            <input id="taskTagsInput" maxlength="80" placeholder="design, api, launch" autocomplete="off" />
+          </label>
+
+          <label class="full-span">
+            Notes
+            <textarea id="taskNotesInput" rows="4" maxlength="400"></textarea>
+          </label>
+        </div>
+
+        <div class="modal-actions">
+          <button class="ghost-button danger hidden" id="deleteTaskButton" type="button">Delete</button>
+          <button class="ghost-button" value="cancel" type="submit" formnovalidate>Cancel</button>
+          <button class="primary-action compact" id="saveTaskButton" value="default" type="submit">Save Task</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="projectDialog">
+      <form method="dialog" id="projectForm" class="modal-form">
+        <div class="modal-header">
+          <div>
+            <p class="eyebrow">Project</p>
+            <h3 id="projectDialogTitle">New Project</h3>
+          </div>
+          <button class="icon-button" value="cancel" type="submit" formnovalidate aria-label="Close">x</button>
+        </div>
+
+        <input type="hidden" id="projectIdInput" />
+        <div class="field-grid">
+          <label class="full-span">
+            Name
+            <input id="projectNameInput" required maxlength="60" autocomplete="off" />
+          </label>
+
+          <label>
+            Owner
+            <input id="projectOwnerInput" maxlength="40" autocomplete="off" />
+          </label>
+
+          <label>
+            Due date
+            <input id="projectDueInput" type="date" />
+          </label>
+
+          <label class="full-span">
+            Color
+            <div class="swatches" id="projectColorInput" role="radiogroup" aria-label="Project color"></div>
+          </label>
+        </div>
+
+        <div class="modal-actions">
+          <button class="ghost-button danger hidden" id="deleteProjectButton" type="button">Delete</button>
+          <button class="ghost-button" value="cancel" type="submit" formnovalidate>Cancel</button>
+          <button class="primary-action compact" id="saveProjectButton" value="default" type="submit">Create Project</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="importDialog">
+      <form method="dialog" id="importForm" class="modal-form">
+        <div class="modal-header">
+          <div>
+            <p class="eyebrow">Import</p>
+            <h3>Paste Google Doc Text</h3>
+          </div>
+          <button class="icon-button" value="cancel" type="submit" formnovalidate aria-label="Close">x</button>
+        </div>
+
+        <label class="full-span">
+          Document text
+          <textarea
+            id="docImportInput"
+            class="doc-import-textarea"
+            rows="14"
+            placeholder="Paste the updated Google Doc text here, including the Projects- Ongoing, Projects- Completed, and Projects- Ideas sections."
+          ></textarea>
+        </label>
+        <p class="import-summary" id="importSummary">Paste the Google Doc text to preview the import.</p>
+
+        <div class="modal-actions">
+          <button class="ghost-button" value="cancel" type="submit" formnovalidate>Cancel</button>
+          <button class="primary-action compact" id="runImportButton" value="default" type="submit">Import Update</button>
+        </div>
+      </form>
+    </dialog>
+
+    <template id="emptyStateTemplate">
+      <div class="empty-state">
+        <h3>No tasks match this view</h3>
+        <p>Adjust the filters or add a task to this project.</p>
+      </div>
+    </template>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
