@@ -477,11 +477,13 @@ const elements = {
   emptyStateTemplate: document.querySelector("#emptyStateTemplate"),
 };
 
-elements.todayLabel.textContent = new Intl.DateTimeFormat(undefined, {
-  weekday: "short",
-  month: "short",
-  day: "numeric",
-}).format(new Date());
+if (elements.todayLabel) {
+  elements.todayLabel.textContent = new Intl.DateTimeFormat(undefined, {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+  }).format(new Date());
+}
 
 elements.newTaskButton.addEventListener("click", () => openTaskDialog());
 elements.newProjectButton.addEventListener("click", () => openProjectDialog());
