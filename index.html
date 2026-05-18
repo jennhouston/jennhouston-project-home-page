@@ -3,26 +3,26 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>2026 Project Tracker</title>
+    <title>Operational Systems Portfolio</title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
     <div class="app-shell">
-      <aside class="sidebar" aria-label="Project navigation">
+      <aside class="sidebar" aria-label="Systems navigation">
         <div class="brand">
           <div class="brand-mark" aria-hidden="true">A</div>
           <div>
-            <h1>Project Home Page</h1>
+            <h1>Systems Portfolio</h1>
             <p id="todayLabel"></p>
           </div>
         </div>
 
         <button class="primary-action" id="newProjectButton" type="button">
           <span aria-hidden="true">+</span>
-          New Project
+          New System
         </button>
 
-        <nav class="project-nav" id="projectNav" aria-label="Projects"></nav>
+        <nav class="project-nav" id="projectNav" aria-label="Workstreams"></nav>
 
         <div class="sidebar-tools">
           <button class="ghost-button" id="importDocButton" type="button">Import Doc Text</button>
@@ -34,29 +34,31 @@
       <main class="workspace">
         <header class="topbar">
           <div>
-            <p class="eyebrow" id="projectEyebrow">All work</p>
-            <h2 id="projectTitle">2026 Project Tracker</h2>
+            <p class="eyebrow" id="projectEyebrow">Systems portfolio</p>
+            <h2 id="projectTitle">Operational Systems Overview</h2>
+            <p class="lede">
+              A calm record of the infrastructure, access, support, lifecycle, onboarding, and documentation systems that keep daily operations legible.
+            </p>
           </div>
 
           <div class="topbar-actions">
             <label class="search-field">
               <span aria-hidden="true">/</span>
-              <input id="searchInput" type="search" placeholder="Search tasks, owners, tags" />
+              <input id="searchInput" type="search" placeholder="Search systems, owners, initiatives" />
             </label>
-            <button class="ghost-button hidden" id="editProjectButton" type="button">Edit Project</button>
+            <button class="ghost-button hidden" id="editProjectButton" type="button">Edit System</button>
             <button class="secondary-action" id="newTaskButton" type="button">
               <span aria-hidden="true">+</span>
-              New Task
+              New Initiative
             </button>
           </div>
         </header>
 
         <section class="metrics" id="metrics" aria-label="Portfolio metrics"></section>
 
-        <section class="control-strip" aria-label="Task controls">
-          <div class="segmented-control" role="tablist" aria-label="View mode">
-            <button class="segment active" id="boardViewButton" type="button" role="tab" aria-selected="true">Board</button>
-            <button class="segment" id="listViewButton" type="button" role="tab" aria-selected="false">List</button>
+        <section class="control-strip" aria-label="Portfolio controls">
+          <div class="portfolio-note">
+            <span>Systems are grouped by operating workstream and read as structured articles.</span>
           </div>
 
           <div class="filters">
@@ -78,25 +80,10 @@
           </div>
         </section>
 
-        <section class="board-view" id="boardView" aria-label="Task board"></section>
+        <section class="systems-view" id="boardView" aria-label="Systems portfolio"></section>
 
-        <section class="list-view hidden" id="listView" aria-label="Task list">
-          <div class="table-shell">
-            <table>
-              <thead>
-                <tr>
-                  <th>Task</th>
-                  <th>Project</th>
-                  <th>Status</th>
-                  <th>Priority</th>
-                  <th>Owner</th>
-                  <th>Due</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody id="taskTableBody"></tbody>
-            </table>
-          </div>
+        <section class="list-view hidden" id="listView" aria-label="Initiative list">
+          <div id="taskTableBody"></div>
         </section>
       </main>
     </div>
@@ -105,8 +92,8 @@
       <form method="dialog" id="taskForm" class="modal-form">
         <div class="modal-header">
           <div>
-            <p class="eyebrow">Task</p>
-            <h3 id="taskDialogTitle">New Task</h3>
+            <p class="eyebrow">Initiative</p>
+            <h3 id="taskDialogTitle">New Initiative</h3>
           </div>
           <button class="icon-button" value="cancel" type="submit" formnovalidate aria-label="Close">x</button>
         </div>
@@ -119,12 +106,12 @@
           </label>
 
           <label>
-            Project
+            System
             <select id="taskProjectInput" required></select>
           </label>
 
           <label class="full-span hidden" id="taskNewProjectField">
-            New project name
+            New system name
             <input id="taskNewProjectInput" maxlength="60" autocomplete="off" />
           </label>
 
@@ -171,7 +158,7 @@
         <div class="modal-actions">
           <button class="ghost-button danger hidden" id="deleteTaskButton" type="button">Delete</button>
           <button class="ghost-button" value="cancel" type="submit" formnovalidate>Cancel</button>
-          <button class="primary-action compact" id="saveTaskButton" value="default" type="submit">Save Task</button>
+          <button class="primary-action compact" id="saveTaskButton" value="default" type="submit">Save Initiative</button>
         </div>
       </form>
     </dialog>
@@ -180,8 +167,8 @@
       <form method="dialog" id="projectForm" class="modal-form">
         <div class="modal-header">
           <div>
-            <p class="eyebrow">Project</p>
-            <h3 id="projectDialogTitle">New Project</h3>
+            <p class="eyebrow">System</p>
+            <h3 id="projectDialogTitle">New System</h3>
           </div>
           <button class="icon-button" value="cancel" type="submit" formnovalidate aria-label="Close">x</button>
         </div>
@@ -212,7 +199,7 @@
         <div class="modal-actions">
           <button class="ghost-button danger hidden" id="deleteProjectButton" type="button">Delete</button>
           <button class="ghost-button" value="cancel" type="submit" formnovalidate>Cancel</button>
-          <button class="primary-action compact" id="saveProjectButton" value="default" type="submit">Create Project</button>
+          <button class="primary-action compact" id="saveProjectButton" value="default" type="submit">Create System</button>
         </div>
       </form>
     </dialog>
@@ -247,8 +234,8 @@
 
     <template id="emptyStateTemplate">
       <div class="empty-state">
-        <h3>No tasks match this view</h3>
-        <p>Adjust the filters or add a task to this project.</p>
+        <h3>No initiatives match this view</h3>
+        <p>Adjust the filters or add an initiative to this system.</p>
       </div>
     </template>
 

@@ -8,6 +8,44 @@ const statusColors = {
 };
 const projectColors = ["#2f67d8", "#1f8a5b", "#a1600a", "#bf3c30", "#7656b8", "#256f78"];
 const NEW_PROJECT_VALUE = "__new_project__";
+const workstreams = [
+  {
+    id: "device-infrastructure",
+    name: "Device & Infrastructure Systems",
+    summary: "Endpoint, network, and platform work that keeps hardware and managed environments ready for daily use.",
+    match: /printer|computer|refresh|apple|business manager|qa|network|laptop|device|jamf|intune/i,
+  },
+  {
+    id: "access-identity",
+    name: "Access & Identity Governance",
+    summary: "Account review, identity workflows, and permission hygiene that keep access aligned with current roles.",
+    match: /account|audit|okta|identity|access|1password|zoom|azure/i,
+  },
+  {
+    id: "support-operations",
+    name: "Support Operations & Tooling",
+    summary: "Support platform improvements, automation ideas, response systems, and cleanup work that reduce friction.",
+    match: /freshdesk|macro|ticket|workflow|automation|slack|support/i,
+  },
+  {
+    id: "inventory-lifecycle",
+    name: "Inventory & Lifecycle Management",
+    summary: "Inventory visibility, stock planning, e-waste readiness, and lifecycle routines for offices and equipment.",
+    match: /inventory|lifecycle|e-waste|ewaste|stock|peripheral/i,
+  },
+  {
+    id: "onboarding-contractors",
+    name: "Onboarding & Contractor Systems",
+    summary: "Repeatable intake and account setup paths for contractors, new hires, and cross-team handoffs.",
+    match: /contractor|databeat|new-hire|onboarding|gmail/i,
+  },
+  {
+    id: "process-documentation",
+    name: "Process & Documentation Systems",
+    summary: "Reusable process writing, standards, and operational documentation that make systems easier to run.",
+    match: /document|documentation|how-to|process|training|standard/i,
+  },
+];
 
 const seedState = {
   selectedProjectId: "all",
@@ -385,6 +423,7 @@ const seedState = {
 
 let state = loadState();
 let activeColor = projectColors[0];
+let activeWorkstream = "all";
 
 const elements = {
   todayLabel: document.querySelector("#todayLabel"),
@@ -454,8 +493,8 @@ elements.searchInput.addEventListener("input", render);
 elements.taskProjectInput.addEventListener("change", handleTaskProjectChange);
 elements.priorityFilter.addEventListener("change", render);
 elements.ownerFilter.addEventListener("change", render);
-elements.boardViewButton.addEventListener("click", () => setView("board"));
-elements.listViewButton.addEventListener("click", () => setView("list"));
+elements.boardViewButton?.addEventListener("click", () => setView("board"));
+elements.listViewButton?.addEventListener("click", () => setView("list"));
 elements.taskForm.addEventListener("submit", saveTaskFromForm);
 elements.projectForm.addEventListener("submit", saveProjectFromForm);
 elements.importForm.addEventListener("submit", importDocFromForm);
@@ -511,42 +550,46 @@ function render() {
 }
 
 function renderProjectNav() {
-  const allCount = state.tasks.filter((task) => task.status !== "Done").length;
+  const allCount = state.projects.length;
   const buttons = [
     {
       id: "all",
-      name: "All Projects",
-      subline: `${state.projects.length} tracked projects`,
+      name: "All Systems",
+      subline: `${state.projects.length} operating systems`,
       count: allCount,
       color: "#224f3b",
     },
-    ...state.projects.map((project) => ({
-      id: project.id,
-      name: project.name,
-      subline: `${project.owner || "Unassigned"} - ${formatDate(project.due)}`,
-      count: state.tasks.filter((task) => task.projectId === project.id && task.status !== "Done").length,
-      color: project.color,
-    })),
+    ...workstreams.map((workstream) => {
+      const projects = projectsForWorkstream(workstream.id);
+      return {
+        id: workstream.id,
+        name: workstream.name,
+        subline: workstream.summary,
+        count: projects.length,
+        color: "#1f6b4c",
+      };
+    }),
   ];
 
   elements.projectNav.replaceChildren(
-    ...buttons.map((project) => {
+    ...buttons.map((workstream) => {
       const button = document.createElement("button");
-      button.className = `project-nav-button ${state.selectedProjectId === project.id ? "active" : ""}`;
+      button.className = `project-nav-button ${activeWorkstream === workstream.id ? "active" : ""}`;
       button.type = "button";
-      button.style.setProperty("--project-color", project.color);
+      button.style.setProperty("--project-color", workstream.color);
       button.addEventListener("click", () => {
-        state.selectedProjectId = project.id;
+        activeWorkstream = workstream.id;
+        state.selectedProjectId = "all";
         render();
       });
 
       button.innerHTML = `
         <span class="project-dot" aria-hidden="true"></span>
         <span>
-          <span class="project-name">${escapeHtml(project.name)}</span>
-          <span class="project-subline">${escapeHtml(project.subline)}</span>
+          <span class="project-name">${escapeHtml(workstream.name)}</span>
+          <span class="project-subline">${escapeHtml(workstream.subline)}</span>
         </span>
-        <span class="project-count" aria-label="${project.count} open tasks">${project.count}</span>
+        <span class="project-count" aria-label="${workstream.count} systems">${workstream.count}</span>
       `;
       return button;
     }),
@@ -560,7 +603,7 @@ function renderProjectNav() {
 
 function renderProjectOptions() {
   elements.taskProjectInput.replaceChildren(
-    new Option("New Project...", NEW_PROJECT_VALUE),
+    new Option("New System...", NEW_PROJECT_VALUE),
     ...state.projects.map((project) => new Option(project.name, project.id)),
   );
 }
@@ -573,47 +616,44 @@ function renderOwnerOptions() {
 }
 
 function renderHeader() {
-  const project = getSelectedProject();
-  elements.editProjectButton.classList.toggle("hidden", !project);
-  if (!project) {
-    elements.projectEyebrow.textContent = "All work";
-    elements.projectTitle.textContent = "2026 Project Tracker";
-    return;
-  }
-
-  elements.projectEyebrow.textContent = `${project.owner || "Unassigned"} - Due ${formatDate(project.due)}`;
-  elements.projectTitle.textContent = project.name;
+  const workstream = workstreamById(activeWorkstream);
+  elements.editProjectButton.classList.add("hidden");
+  elements.projectEyebrow.textContent = workstream ? "Focused workstream" : "Systems portfolio";
+  elements.projectTitle.textContent = workstream ? workstream.name : "Operational Systems Overview";
+  document.querySelector(".lede").textContent = workstream
+    ? workstream.summary
+    : "A calm record of the infrastructure, access, support, lifecycle, onboarding, and documentation systems that keep daily operations legible.";
 }
 
 function renderMetrics() {
-  const scopedTasks = tasksForSelectedProject();
+  const scopedTasks = getVisibleTasks();
+  const visibleProjects = getVisibleProjects();
   const openTasks = scopedTasks.filter((task) => task.status !== "Done");
   const dueSoon = openTasks.filter((task) => daysUntil(task.due) >= 0 && daysUntil(task.due) <= 7);
   const overdue = openTasks.filter((task) => isOverdue(task.due));
   const doneCount = scopedTasks.filter((task) => task.status === "Done").length;
   const progress = scopedTasks.length ? Math.round((doneCount / scopedTasks.length) * 100) : 0;
-  const projectCount = getSelectedProject() ? 1 : state.projects.length;
 
   const metrics = [
     {
-      value: projectCount,
-      label: projectCount === 1 ? "Tracked project" : "Tracked projects",
-      note: `${openTasks.length} open tasks`,
+      value: visibleProjects.length,
+      label: visibleProjects.length === 1 ? "System" : "Systems",
+      note: `${openTasks.length} active initiatives`,
     },
     {
       value: openTasks.length,
-      label: "Open tasks",
+      label: "Active initiatives",
       note: `${doneCount} completed`,
     },
     {
       value: overdue.length,
-      label: "Overdue",
+      label: "Needs review",
       note: `${dueSoon.length} due this week`,
     },
     {
       value: `${progress}%`,
-      label: "Completion",
-      note: scopedTasks.length ? `${doneCount} of ${scopedTasks.length} tasks done` : "No tasks yet",
+      label: "Resolved",
+      note: scopedTasks.length ? `${doneCount} of ${scopedTasks.length} initiatives done` : "No initiatives yet",
     },
   ];
 
@@ -633,17 +673,118 @@ function renderMetrics() {
 
 function renderViews() {
   const filteredTasks = getFilteredTasks();
-  const isBoard = state.view === "board";
+  elements.boardViewButton?.classList.toggle("active", true);
+  elements.listViewButton?.classList.toggle("active", false);
+  elements.boardViewButton?.setAttribute("aria-selected", "true");
+  elements.listViewButton?.setAttribute("aria-selected", "false");
+  elements.boardView.classList.remove("hidden");
+  elements.listView.classList.add("hidden");
 
-  elements.boardViewButton.classList.toggle("active", isBoard);
-  elements.listViewButton.classList.toggle("active", !isBoard);
-  elements.boardViewButton.setAttribute("aria-selected", String(isBoard));
-  elements.listViewButton.setAttribute("aria-selected", String(!isBoard));
-  elements.boardView.classList.toggle("hidden", !isBoard);
-  elements.listView.classList.toggle("hidden", isBoard);
+  renderSystemsPortfolio(filteredTasks);
+}
 
-  renderBoard(filteredTasks);
-  renderTable(filteredTasks);
+function renderSystemsPortfolio(tasks) {
+  const visibleProjects = getVisibleProjects();
+  const groups = workstreams
+    .map((workstream) => {
+      const projects = visibleProjects.filter((project) => projectWorkstream(project).id === workstream.id);
+      return { ...workstream, projects };
+    })
+    .filter((workstream) => workstream.projects.length);
+
+  if (!groups.length) {
+    elements.boardView.replaceChildren(emptyState());
+    return;
+  }
+
+  elements.boardView.replaceChildren(
+    ...groups.map((workstream) => {
+      const section = document.createElement("section");
+      section.className = "workstream-section";
+      section.id = workstream.id;
+
+      const systemArticles = workstream.projects
+        .map((project) => createSystemArticle(project, tasks.filter((task) => task.projectId === project.id)))
+        .filter(Boolean);
+
+      section.innerHTML = `
+        <div class="workstream-heading">
+          <p class="eyebrow">${escapeHtml(workstream.name)}</p>
+          <h3>${escapeHtml(workstream.name)}</h3>
+          <p>${escapeHtml(workstream.summary)}</p>
+        </div>
+      `;
+      section.append(...systemArticles);
+      return section;
+    }),
+  );
+}
+
+function createSystemArticle(project, tasks) {
+  if (!tasks.length) return null;
+
+  const article = document.createElement("article");
+  article.className = "system-article";
+  const activeCount = tasks.filter((task) => task.status !== "Done").length;
+  const summary = summarizeSystem(project, tasks);
+
+  article.innerHTML = `
+    <header class="system-header">
+      <div>
+        <p class="system-meta">${escapeHtml(project.owner || "Unassigned")} / ${escapeHtml(formatDate(project.due))} / ${activeCount} active initiatives</p>
+        <h4>
+          <button class="system-title-button" type="button">${escapeHtml(project.name)}</button>
+        </h4>
+      </div>
+      <span class="status-chip">${escapeHtml(systemStatus(tasks))}</span>
+    </header>
+    <p class="system-summary">${escapeHtml(summary)}</p>
+    <ul class="initiative-list">
+      ${tasks.map((task) => initiativeItemMarkup(task)).join("")}
+    </ul>
+  `;
+
+  article.querySelector(".system-title-button").addEventListener("click", () => openProjectDialog(project.id));
+  article.querySelectorAll("[data-task-id]").forEach((button) => {
+    button.addEventListener("click", () => openTaskDialog(button.dataset.taskId));
+  });
+  return article;
+}
+
+function initiativeItemMarkup(task) {
+  const dueText = formatDate(task.due);
+  const tags = task.tags.length ? ` / ${task.tags.map((tag) => `#${escapeHtml(tag)}`).join(" ")}` : "";
+  const note = task.notes ? `<span class="initiative-note">${escapeHtml(cleanInitiativeNote(task.notes))}</span>` : "";
+
+  return `
+    <li>
+      <button class="initiative-title" type="button" data-task-id="${escapeHtml(task.id)}">${escapeHtml(task.title)}</button>
+      <span class="initiative-meta">${escapeHtml(task.status)} / ${escapeHtml(task.priority)} / ${escapeHtml(task.owner || "Unassigned")} / ${escapeHtml(dueText)}${tags}</span>
+      ${note}
+    </li>
+  `;
+}
+
+function summarizeSystem(project, tasks) {
+  const firstNote = tasks.map((task) => cleanInitiativeNote(task.notes)).find(Boolean);
+  if (firstNote) return firstNote;
+  const openCount = tasks.filter((task) => task.status !== "Done").length;
+  const completedCount = tasks.length - openCount;
+  return `${project.name} is tracked as an operational system with ${openCount} active initiatives and ${completedCount} completed work items.`;
+}
+
+function cleanInitiativeNote(note) {
+  return note
+    .split("\n")
+    .map((line) => line.replace(/^(Objective|Timeline):\s*/i, "").trim())
+    .filter(Boolean)[0] || "";
+}
+
+function systemStatus(tasks) {
+  if (tasks.every((task) => task.status === "Done")) return "Resolved";
+  if (tasks.some((task) => task.status === "Review")) return "In review";
+  if (tasks.some((task) => task.status === "In Progress")) return "Active";
+  return "Planned";
 }
 
 function renderBoard(tasks) {
@@ -750,7 +891,7 @@ function getFilteredTasks() {
   const priority = elements.priorityFilter.value;
   const owner = elements.ownerFilter.value;
 
-  return tasksForSelectedProject()
+  return getVisibleTasks()
     .filter((task) => {
       const project = projectById(task.projectId);
       const haystack = [
@@ -773,6 +914,44 @@ function getFilteredTasks() {
       );
     })
     .sort(sortTasks);
+}
+
+function getVisibleProjects() {
+  return activeWorkstream === "all" ? state.projects : projectsForWorkstream(activeWorkstream);
+}
+
+function getVisibleTasks() {
+  const projectIds = new Set((activeWorkstream === "all" ? state.projects : projectsForWorkstream(activeWorkstream)).map((project) => project.id));
+  return state.tasks.filter((task) => projectIds.has(task.projectId));
+}
+
+function projectsForWorkstream(workstreamId) {
+  return state.projects.filter((project) => projectWorkstream(project).id === workstreamId);
+}
+
+function projectWorkstream(project) {
+  const name = project.name.toLowerCase();
+  if (/inventory/.test(name)) return workstreamById("inventory-lifecycle");
+  if (/databeat|contractor|onboarding|new-hire/.test(name)) return workstreamById("onboarding-contractors");
+  if (/document|process|training/.test(name)) return workstreamById("process-documentation");
+  if (/account|audit|okta|identity|access/.test(name)) return workstreamById("access-identity");
+  if (/freshdesk|macro|ticket|workflow|automation|support/.test(name)) return workstreamById("support-operations");
+  if (/printer|computer|refresh|apple|qa|network|device/.test(name)) return workstreamById("device-infrastructure");
+
+  const projectTasks = state.tasks.filter((task) => task.projectId === project.id);
+  const text = [
+    project.name,
+    project.owner,
+    ...projectTasks.flatMap((task) => [task.title, task.notes, task.owner, task.tags.join(" ")]),
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  return workstreams.find((workstream) => workstream.match.test(text)) || workstreams.at(-1);
+}
+
+function workstreamById(id) {
+  return workstreams.find((workstream) => workstream.id === id);
 }
 
 function tasksForSelectedProject() {
@@ -808,11 +987,12 @@ function handleTaskProjectChange() {
 
 function openTaskDialog(taskId = null) {
   const task = taskId ? state.tasks.find((item) => item.id === taskId) : null;
-  elements.taskDialogTitle.textContent = task ? "Edit Task" : "New Task";
+  elements.taskDialogTitle.textContent = task ? "Edit Initiative" : "New Initiative";
   elements.deleteTaskButton.classList.toggle("hidden", !task);
   elements.taskId.value = task?.id || "";
   elements.taskTitleInput.value = task?.title || "";
-  elements.taskProjectInput.value = task?.projectId || (state.selectedProjectId !== "all" ? state.selectedProjectId : state.projects[0]?.id || NEW_PROJECT_VALUE);
+  elements.taskProjectInput.value =
+    task?.projectId || (activeWorkstream !== "all" ? projectsForWorkstream(activeWorkstream)[0]?.id : state.projects[0]?.id) || NEW_PROJECT_VALUE;
   elements.taskNewProjectInput.value = "";
   elements.taskStatusInput.value = task?.status || "Planned";
   elements.taskPriorityInput.value = task?.priority || "Medium";
@@ -837,7 +1017,7 @@ function saveTaskFromForm(event) {
   if (projectId === NEW_PROJECT_VALUE) {
     const projectName = elements.taskNewProjectInput.value.trim();
     if (!projectName) {
-      elements.taskNewProjectInput.setCustomValidity("Enter a project name.");
+      elements.taskNewProjectInput.setCustomValidity("Enter a system name.");
       elements.taskNewProjectInput.reportValidity();
       return;
     }
@@ -895,8 +1075,8 @@ function deleteCurrentTask() {
 
 function openProjectDialog(projectId = null) {
   const project = projectById(projectId);
-  elements.projectDialogTitle.textContent = project ? "Edit Project" : "New Project";
-  elements.saveProjectButton.textContent = project ? "Save Project" : "Create Project";
+  elements.projectDialogTitle.textContent = project ? "Edit System" : "New System";
+  elements.saveProjectButton.textContent = project ? "Save System" : "Create System";
   elements.deleteProjectButton.classList.toggle("hidden", !project);
   elements.projectIdInput.value = project?.id || "";
   elements.projectNameInput.value = project?.name || "";
@@ -942,7 +1122,7 @@ function deleteCurrentProject() {
   if (!project) return;
 
   const taskCount = state.tasks.filter((task) => task.projectId === projectId).length;
-  const label = taskCount === 1 ? "1 task" : `${taskCount} tasks`;
+  const label = taskCount === 1 ? "1 initiative" : `${taskCount} initiatives`;
   if (!confirm(`Delete "${project.name}" and ${label}?`)) {
     return;
   }
@@ -970,11 +1150,11 @@ function updateImportSummary() {
 
   const parsed = parseDocText(text);
   if (!parsed.projects.length) {
-    elements.importSummary.textContent = "No projects found yet. Include project names with Objective or Timeline lines.";
+    elements.importSummary.textContent = "No systems found yet. Include names with Objective or Timeline lines.";
     return;
   }
 
-  elements.importSummary.textContent = `Ready to import ${parsed.projects.length} projects and ${parsed.tasks.length} tasks.`;
+  elements.importSummary.textContent = `Ready to import ${parsed.projects.length} systems and ${parsed.tasks.length} initiatives.`;
 }
 
 function importDocFromForm(event) {
@@ -985,12 +1165,12 @@ function importDocFromForm(event) {
   event.preventDefault();
   const parsed = parseDocText(elements.docImportInput.value);
   if (!parsed.projects.length) {
-    elements.importSummary.textContent = "I could not find projects. Paste the doc text with project bullets plus Objective or Timeline lines.";
+    elements.importSummary.textContent = "I could not find systems. Paste the doc text with project bullets plus Objective or Timeline lines.";
     return;
   }
 
-  const label = parsed.projects.length === 1 ? "1 project" : `${parsed.projects.length} projects`;
-  const taskLabel = parsed.tasks.length === 1 ? "1 task" : `${parsed.tasks.length} tasks`;
+  const label = parsed.projects.length === 1 ? "1 system" : `${parsed.projects.length} systems`;
+  const taskLabel = parsed.tasks.length === 1 ? "1 initiative" : `${parsed.tasks.length} initiatives`;
   if (!confirm(`Replace this tracker with ${label} and ${taskLabel} from the pasted doc text?`)) {
     return;
   }
@@ -1274,7 +1454,7 @@ function exportState() {
 }
 
 function resetDemo() {
-  if (!confirm("Reset all projects and tasks to the Google Doc plan?")) {
+  if (!confirm("Reset all systems and initiatives to the Google Doc plan?")) {
     return;
   }
   state = clone(seedState);
