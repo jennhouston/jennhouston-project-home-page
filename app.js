@@ -576,7 +576,7 @@ function renderHeader() {
   const project = getSelectedProject();
   elements.editProjectButton.classList.toggle("hidden", !project);
   if (!project) {
-    elements.projectEyebrow.textContent = "Jenn Houston roadmap";
+    elements.projectEyebrow.textContent = "All work";
     elements.projectTitle.textContent = "2026 Project Tracker";
     return;
   }

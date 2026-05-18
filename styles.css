@@ -1,26 +1,26 @@
 :root {
-  --paper: #fffaf2;
-  --paper-warm: #f6efe4;
-  --paper-soft: #fbf5ec;
-  --surface: #fffdf8;
-  --ink: #171411;
-  --muted: #756d65;
-  --quiet: #9c9287;
-  --line: #d9cfc1;
-  --line-strong: #2c2722;
-  --accent: #c31624;
-  --accent-dark: #8f121b;
-  --blue: #285f95;
-  --blue-soft: #ecf2f7;
-  --green: #267151;
-  --green-soft: #edf5ef;
-  --amber: #9a6417;
-  --amber-soft: #f8eddb;
-  --red: #c31624;
-  --red-soft: #fae8e6;
-  --violet: #67549a;
-  --shadow: 0 18px 48px rgba(23, 20, 17, 0.14);
-  --radius: 3px;
+  --paper: #fffdf8;
+  --paper-warm: #f6f1e9;
+  --paper-soft: #fbf7ef;
+  --surface: #ffffff;
+  --ink: #111111;
+  --muted: #615b54;
+  --quiet: #90877d;
+  --line: #d8d0c5;
+  --line-strong: #111111;
+  --accent: #b4141f;
+  --accent-dark: #8f0f18;
+  --blue: #1f5b86;
+  --blue-soft: #eaf1f6;
+  --green: #1f6b4c;
+  --green-soft: #eaf3ed;
+  --amber: #8f5f13;
+  --amber-soft: #f8ecd8;
+  --red: #b4141f;
+  --red-soft: #f8e6e7;
+  --violet: #5d4e91;
+  --shadow: 0 18px 48px rgba(17, 17, 17, 0.14);
+  --radius: 2px;
   --serif: Georgia, "Times New Roman", Times, serif;
   --sans: Arial, Helvetica, sans-serif;
 }
@@ -37,8 +37,8 @@ body {
   min-height: 100vh;
   margin: 0;
   background:
-    radial-gradient(circle at 18% 4%, rgba(195, 22, 36, 0.05), transparent 26rem),
-    linear-gradient(180deg, #fffdf8 0, var(--paper) 42rem);
+    linear-gradient(90deg, rgba(17, 17, 17, 0.018) 1px, transparent 1px) 0 0 / 72px 72px,
+    linear-gradient(180deg, #ffffff 0, var(--paper) 28rem, var(--paper-warm) 100%);
   color: var(--ink);
   font-family: var(--sans);
   letter-spacing: 0;
@@ -65,43 +65,51 @@ button {
   top: 0;
   z-index: 10;
   display: grid;
-  grid-template-columns: minmax(320px, max-content) max-content minmax(260px, 1fr) max-content;
-  grid-template-areas: "brand new projects tools";
+  grid-template-columns: minmax(400px, 1fr) auto minmax(400px, 1fr);
+  grid-template-areas:
+    "new brand tools"
+    "projects projects projects";
   align-items: center;
-  gap: 18px;
+  column-gap: 22px;
+  row-gap: 13px;
+  border-top: 1px solid var(--line-strong);
   border-bottom: 1px solid var(--line-strong);
-  background: rgba(255, 250, 242, 0.94);
-  padding: 13px 28px 12px;
-  backdrop-filter: blur(14px);
+  background: rgba(255, 253, 248, 0.96);
+  padding: 12px 28px 0;
+  backdrop-filter: blur(12px);
 }
 
 .brand {
   grid-area: brand;
   display: flex;
   align-items: center;
-  gap: 10px;
+  justify-self: center;
+  gap: 12px;
   min-width: 0;
+  padding-bottom: 2px;
 }
 
 #newProjectButton {
   grid-area: new;
   min-width: 124px;
+  justify-self: start;
   white-space: nowrap;
 }
 
 .brand-mark {
   display: grid;
-  width: 32px;
-  height: 32px;
+  width: 42px;
+  height: 42px;
   flex: 0 0 auto;
   place-items: center;
-  border: 1px solid var(--accent);
+  border: 2px solid var(--accent);
   border-radius: 50%;
   background: var(--surface);
   color: var(--accent);
   font-family: var(--serif);
-  font-size: 20px;
+  font-size: 26px;
   font-weight: 800;
+  line-height: 1;
 }
 
 h1,
@@ -113,18 +121,19 @@ p {
 
 h1 {
   font-family: var(--serif);
-  font-size: 22px;
+  font-size: 34px;
   font-weight: 800;
   line-height: 0.95;
+  white-space: nowrap;
 }
 
 h2 {
   max-width: 980px;
-  margin-top: 10px;
+  margin-top: 8px;
   font-family: var(--serif);
-  font-size: 64px;
+  font-size: 72px;
   font-weight: 800;
-  line-height: 0.9;
+  line-height: 0.88;
 }
 
 h3 {
@@ -149,22 +158,22 @@ h3 {
 .icon-button,
 .segment {
   display: inline-flex;
-  min-height: 38px;
+  min-height: 36px;
   align-items: center;
   justify-content: center;
   gap: 8px;
   border: 1px solid var(--line-strong);
   border-radius: var(--radius);
-  padding: 0 14px;
+  padding: 0 13px;
   background: transparent;
   color: var(--ink);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 800;
+  text-transform: uppercase;
   transition:
     border-color 140ms ease,
     background 140ms ease,
-    color 140ms ease,
-    transform 140ms ease;
+    color 140ms ease;
 }
 
 .primary-action,
@@ -183,7 +192,7 @@ h3 {
 }
 
 .ghost-button {
-  background: rgba(255, 253, 248, 0.72);
+  background: rgba(255, 255, 255, 0.7);
 }
 
 .ghost-button.danger {
@@ -203,7 +212,6 @@ h3 {
   background: var(--ink);
   border-color: var(--ink);
   color: #ffffff;
-  transform: translateY(-1px);
 }
 
 .primary-action:focus-visible,
@@ -223,34 +231,35 @@ textarea:focus-visible {
   display: flex;
   width: 100%;
   min-width: 0;
-  gap: 16px;
+  gap: 0;
   overflow-x: auto;
+  border-top: 1px solid var(--line);
   scrollbar-width: thin;
 }
 
 .project-nav-button {
   display: grid;
-  min-width: 182px;
-  max-width: 232px;
+  min-width: 168px;
+  max-width: 230px;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   border: 0;
-  border-left: 1px solid var(--line);
+  border-right: 1px solid var(--line);
   border-radius: 0;
   background: transparent;
-  padding: 2px 0 2px 13px;
+  padding: 11px 15px 12px;
   color: var(--ink);
   text-align: left;
 }
 
 .project-nav-button:hover {
+  background: rgba(180, 20, 31, 0.045);
   color: var(--accent);
 }
 
 .project-nav-button.active {
-  border-left-color: var(--accent);
-  box-shadow: inset 3px 0 0 var(--accent);
+  box-shadow: inset 0 -4px 0 var(--accent);
   color: var(--accent-dark);
 }
 
@@ -261,28 +270,31 @@ textarea:focus-visible {
 .project-name {
   display: block;
   overflow: hidden;
-  font-family: var(--serif);
-  font-size: 16px;
+  font-family: var(--sans);
+  font-size: 12px;
   font-weight: 800;
-  line-height: 1.05;
+  line-height: 1.12;
   text-overflow: ellipsis;
+  text-transform: uppercase;
   white-space: nowrap;
 }
 
 .project-subline {
   display: block;
-  margin-top: 4px;
+  margin-top: 5px;
   overflow: hidden;
   color: var(--muted);
-  font-size: 11px;
-  font-weight: 700;
+  font-family: var(--serif);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.2;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .project-count {
-  min-width: 28px;
-  border: 1px solid var(--line);
+  min-width: 27px;
+  border: 1px solid var(--line-strong);
   border-radius: 999px;
   background: var(--surface);
   color: var(--ink);
@@ -297,6 +309,7 @@ textarea:focus-visible {
   display: flex;
   align-items: center;
   gap: 8px;
+  justify-self: end;
 }
 
 .sidebar-tools .ghost-button {
@@ -304,25 +317,26 @@ textarea:focus-visible {
 }
 
 .workspace {
-  max-width: 1440px;
+  max-width: 1510px;
   min-width: 0;
   margin: 0 auto;
-  padding: 34px 32px 48px;
+  padding: 42px 34px 56px;
 }
 
 .topbar {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: end;
+  grid-template-columns: minmax(0, 1fr) minmax(360px, auto);
+  align-items: center;
   gap: 24px;
   border-bottom: 1px solid var(--line-strong);
-  padding-bottom: 26px;
+  padding-bottom: 30px;
 }
 
 .topbar::before {
   grid-column: 1 / -1;
-  width: min(210px, 42vw);
-  height: 5px;
+  width: 230px;
+  max-width: 42vw;
+  height: 6px;
   background: var(--accent);
   content: "";
 }
@@ -331,19 +345,20 @@ textarea:focus-visible {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding-bottom: 5px;
+  justify-content: flex-end;
+  padding-top: 14px;
 }
 
 .search-field {
   display: flex;
-  width: min(390px, 34vw);
-  min-height: 40px;
+  width: min(420px, 35vw);
+  min-height: 42px;
   align-items: center;
   gap: 10px;
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: var(--radius);
   background: var(--surface);
-  padding: 0 14px;
+  padding: 0 13px;
   color: var(--accent);
   font-weight: 800;
 }
@@ -359,16 +374,17 @@ textarea:focus-visible {
 
 .metrics {
   display: grid;
-  grid-template-columns: 1.25fr 1fr 1fr 1.25fr;
+  grid-template-columns: 1.2fr 1fr 1fr 1.2fr;
   gap: 0;
-  margin: 20px 0 24px;
+  margin: 18px 0 28px;
+  border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
 }
 
 .metric {
-  min-height: 116px;
+  min-height: 104px;
   border-right: 1px solid var(--line);
-  padding: 20px 22px 20px 0;
+  padding: 17px 22px 18px 0;
 }
 
 .metric + .metric {
@@ -381,13 +397,13 @@ textarea:focus-visible {
 
 .metric-value {
   font-family: var(--serif);
-  font-size: 48px;
+  font-size: 46px;
   font-weight: 800;
   line-height: 0.9;
 }
 
 .metric-label {
-  margin-top: 12px;
+  margin-top: 10px;
   color: var(--ink);
   font-size: 12px;
   font-weight: 800;
@@ -407,12 +423,14 @@ textarea:focus-visible {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 18px;
 }
 
 .segmented-control {
   display: inline-flex;
-  border-bottom: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line);
   background: transparent;
 }
 
@@ -428,7 +446,7 @@ textarea:focus-visible {
 
 .segment.active {
   color: var(--accent);
-  box-shadow: inset 0 -3px 0 var(--accent);
+  box-shadow: inset 0 -4px 0 var(--accent);
 }
 
 .segment.active:hover {
@@ -461,7 +479,7 @@ textarea {
 
 select,
 input {
-  height: 39px;
+  height: 42px;
   padding: 0 10px;
 }
 
@@ -487,50 +505,52 @@ textarea {
 }
 
 .filters select {
-  min-width: 150px;
+  min-width: 172px;
   margin-top: 6px;
 }
 
 .board-view {
   display: grid;
-  grid-template-columns: minmax(230px, 1.15fr) repeat(3, minmax(210px, 1fr));
-  gap: 28px;
-  margin-top: 22px;
+  grid-template-columns: minmax(260px, 1.18fr) repeat(3, minmax(220px, 1fr));
+  gap: 26px;
+  margin-top: 25px;
 }
 
 .board-column {
   min-width: 0;
-  border-top: 1px solid var(--line-strong);
+  border-top: 3px solid var(--line-strong);
   background: transparent;
-  padding-top: 13px;
+  padding-top: 12px;
 }
 
 .board-column:nth-child(2),
 .board-column:nth-child(3),
 .board-column:nth-child(4) {
   border-left: 1px solid var(--line);
-  padding-left: 18px;
+  padding-left: 20px;
 }
 
 .column-header {
   display: flex;
-  min-height: 34px;
+  min-height: 32px;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  margin-bottom: 13px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 8px;
 }
 
 .column-header h3 {
   font-family: var(--sans);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 900;
   text-transform: uppercase;
 }
 
 .column-count {
   min-width: 26px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--line-strong);
   border-radius: 999px;
   background: var(--surface);
   color: var(--ink);
@@ -554,10 +574,10 @@ textarea {
 
 .task-card {
   display: grid;
-  gap: 9px;
+  gap: 10px;
   border-top: 1px solid var(--line);
   background: transparent;
-  padding: 15px 0 17px;
+  padding: 16px 0 18px;
 }
 
 .task-card:first-child {
@@ -595,7 +615,7 @@ textarea {
   display: inline;
   overflow-wrap: anywhere;
   font-family: var(--serif);
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 800;
   line-height: 1.08;
 }
@@ -615,13 +635,14 @@ textarea {
   display: inline-flex;
   min-height: 22px;
   align-items: center;
-  border: 1px solid transparent;
-  border-radius: 999px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
   padding: 0 8px;
-  background: var(--paper-soft);
+  background: var(--surface);
   color: var(--muted);
   font-size: 11px;
   font-weight: 800;
+  text-transform: uppercase;
 }
 
 .pill.high {
@@ -641,19 +662,22 @@ textarea {
 
 .pill.overdue {
   background: var(--red);
+  border-color: var(--red);
   color: #ffffff;
 }
 
 .pill.project-pill {
-  background: var(--blue-soft);
-  color: var(--blue);
+  border-color: transparent;
+  background: transparent;
+  color: var(--accent-dark);
+  padding-left: 0;
 }
 
 .task-notes {
   color: var(--muted);
   font-family: var(--serif);
-  font-size: 15px;
-  line-height: 1.36;
+  font-size: 16px;
+  line-height: 1.38;
 }
 
 .tag-row {
@@ -663,9 +687,10 @@ textarea {
 }
 
 .tag {
-  color: var(--accent-dark);
+  color: var(--blue);
   font-size: 11px;
   font-weight: 800;
+  text-transform: uppercase;
 }
 
 .list-view {
@@ -676,7 +701,7 @@ textarea {
   overflow: auto;
   border-top: 1px solid var(--line-strong);
   border-bottom: 1px solid var(--line-strong);
-  background: transparent;
+  background: rgba(255, 255, 255, 0.48);
 }
 
 table {
@@ -688,7 +713,7 @@ table {
 th,
 td {
   border-bottom: 1px solid var(--line);
-  padding: 14px 12px;
+  padding: 15px 12px;
   text-align: left;
   vertical-align: middle;
 }
@@ -706,7 +731,7 @@ td {
 }
 
 tbody tr:hover {
-  background: rgba(255, 253, 248, 0.68);
+  background: rgba(180, 20, 31, 0.04);
 }
 
 tbody tr:last-child td {
@@ -735,7 +760,7 @@ dialog {
   border: 1px solid var(--line-strong);
   border-radius: var(--radius);
   padding: 0;
-  background: var(--paper);
+  background: var(--surface);
   box-shadow: var(--shadow);
 }
 
@@ -744,7 +769,7 @@ dialog::backdrop {
 }
 
 .modal-form {
-  padding: 22px;
+  padding: 24px;
 }
 
 .modal-header {
@@ -752,15 +777,15 @@ dialog::backdrop {
   align-items: start;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 18px;
+  margin-bottom: 20px;
   border-bottom: 1px solid var(--line);
-  padding-bottom: 14px;
+  padding-bottom: 16px;
 }
 
 .field-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  gap: 15px;
 }
 
 .field-grid label {
@@ -777,9 +802,9 @@ dialog::backdrop {
   align-items: center;
   justify-content: flex-end;
   gap: 10px;
-  margin-top: 18px;
+  margin-top: 20px;
   border-top: 1px solid var(--line);
-  padding-top: 14px;
+  padding-top: 16px;
 }
 
 .modal-actions .danger {
@@ -819,7 +844,7 @@ dialog::backdrop {
   display: grid;
   min-height: 150px;
   place-items: center;
-  border-top: 1px dashed var(--line);
+  border-top: 1px solid var(--line);
   color: var(--muted);
   padding: 24px 0;
   text-align: center;
@@ -841,15 +866,20 @@ dialog::backdrop {
 
 @media (max-width: 1320px) {
   .sidebar {
-    grid-template-columns: minmax(0, 1fr) max-content max-content;
+    grid-template-columns: 1fr auto;
     grid-template-areas:
-      "brand new tools"
-      "projects projects projects";
+      "brand brand"
+      "new tools"
+      "projects projects";
     row-gap: 12px;
   }
 
+  .brand {
+    justify-self: center;
+  }
+
   .project-nav {
-    padding-top: 2px;
+    margin-top: 0;
   }
 }
 
@@ -866,11 +896,12 @@ dialog::backdrop {
 
 @media (max-width: 980px) {
   h2 {
-    font-size: 48px;
+    font-size: 52px;
   }
 
   .topbar {
     grid-template-columns: 1fr;
+    align-items: start;
   }
 
   .topbar-actions,
@@ -900,16 +931,23 @@ dialog::backdrop {
       "new"
       "projects"
       "tools";
-    padding: 14px 16px;
+    row-gap: 12px;
+    padding: 14px 16px 0;
   }
 
   .brand {
     align-items: center;
+    justify-self: start;
+  }
+
+  #newProjectButton {
+    justify-self: stretch;
   }
 
   .sidebar-tools {
     display: grid;
     grid-template-columns: 1fr;
+    justify-self: stretch;
   }
 
   .workspace {
@@ -917,15 +955,22 @@ dialog::backdrop {
   }
 
   h1 {
-    font-size: 22px;
+    font-size: 26px;
+    white-space: normal;
   }
 
   h2 {
-    font-size: 40px;
+    font-size: 42px;
+  }
+
+  .brand-mark {
+    width: 38px;
+    height: 38px;
+    font-size: 23px;
   }
 
   .project-nav-button {
-    min-width: 210px;
+    min-width: 205px;
   }
 
   .metrics,
