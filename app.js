@@ -618,11 +618,11 @@ function renderOwnerOptions() {
 function renderHeader() {
   const workstream = workstreamById(activeWorkstream);
   elements.editProjectButton.classList.add("hidden");
-  elements.projectEyebrow.textContent = workstream ? "Focused workstream" : "Systems portfolio";
-  elements.projectTitle.textContent = workstream ? workstream.name : "Operational Systems Overview";
+  elements.projectEyebrow.textContent = workstream ? "Focused workstream" : "Systems Portfolio";
+  elements.projectTitle.textContent = workstream ? workstream.name : "Systems Portfolio";
   document.querySelector(".lede").textContent = workstream
     ? workstream.summary
-    : "A calm record of the infrastructure, access, support, lifecycle, onboarding, and documentation systems that keep daily operations legible.";
+    : "A view into the systems that keep operations running-structured across infrastructure, access, support, onboarding, and lifecycle workflows.";
 }
 
 function renderMetrics() {
